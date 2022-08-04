@@ -26,6 +26,18 @@ let persons = [
     }
 ]
 const gmtDateTime = new Date().toLocaleString()
+const generateID = (persons, id) =>{
+    while(true){
+        id = Math.floor(Math.random() * 300000)
+        if(persons.find(p => p.id === id)){
+            console.log('continue')
+            continue
+        }else{
+            console.log('break')
+            return id
+        }
+    }
+}
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
@@ -62,18 +74,19 @@ app.delete('/api/persons/:id', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
-    console.log("body :",body)
-    let id = null
-    while(true){
-        id = Math.floor(Math.random() * 300000)
-        if(persons.find(p => p.id === id)){
-            console.log('continue')
-            continue
-        }else{
-            console.log('break')
-            break
-        }
+    console.log(body)
+    if(!body.name || !body.number){
+        return response.status(400).send({
+            error: "Name or number is missing"
+        })
     }
+    if(persons.find(p => p.name === body.name)){
+        return response.status(400).send({
+            error: "Name must be unique"
+        })
+    }
+    let id = null
+    id = generateID(persons, id)
     const person = {
         id: id,
         name: body.name,

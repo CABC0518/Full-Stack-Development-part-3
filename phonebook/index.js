@@ -1,6 +1,8 @@
+require('dotenv').config()
 const { request } = require('express')
 const express = require('express')
 const morgan = require('morgan')
+const Person = require('./models/person')
 const app = express()
 app.use(express.static('build'))
 app.use(express.json())
@@ -49,7 +51,9 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-  response.json(persons)
+Person.find({}).then(person => {
+        response.json(person)
+    })
 })
 
 app.get('/info', (request, response) =>{
@@ -91,17 +95,15 @@ app.post('/api/persons', morgan(':method :url :status  :res[content-length] - :r
             error: "Name must be unique"
         })
     }
-    let id = null
-    id = generateID(persons, id)
-    const person = {
-        id: id,
+    const person = new Person({
         name: body.name,
         number: body.number,
         date: new Date(),
         
-    }
-    persons = persons.concat(person)
-    response.json(person)
+    })
+    person.save().then(savePerson => {
+        response.json(savePerson)
+    })
 })
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {

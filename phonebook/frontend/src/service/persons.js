@@ -16,4 +16,10 @@ const update = (id, newObject) => {
 const deletePerson = (id) => {
     return axios.delete(`${baseUrl}/${id}`)
 }
-export default { getAll, create, update, deletePerson }
+// eslint-disable-next-line import/no-anonymous-default-export
+export default { 
+  getAll, 
+  create, 
+  update,
+  deletePerson
+}

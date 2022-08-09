@@ -11,9 +11,16 @@ const number = process.argv[4]
 const url = `mongodb+srv://Nuchanoko:${password}@cluster0.atynk6h.mongodb.net/Phonebook?retryWrites=true&w=majority`
 
 const personSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    minlength: 7,
+    required: true,
+  },
   number: String,
-  date: Date,
+  date: {
+    type: Date,
+    required: true
+  },
 })
 
 const Person = mongoose.model('Person', personSchema)

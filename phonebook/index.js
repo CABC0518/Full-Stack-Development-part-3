@@ -76,14 +76,14 @@ app.put('/api/persons/:id', (request, response, next) =>{
         number: body.number
     }
 
-    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+    Person.findByIdAndUpdate(request.params.id, person, {new: true, runValidators: true, context: 'query'})
     .then(updatePerson =>{
         response.json(updatePerson)
     })
     .catch(error => next(error))
 })
 
-app.post('/api/persons', morgan(':method :url :status  :res[content-length] - :response-time ms :body'), (request, response) => {
+app.post('/api/persons', morgan(':method :url :status  :res[content-length] - :response-time ms :body'), (request, response, next) => {
     const body = request.body
     console.log(body)
     if(!body.name || !body.number){
@@ -96,9 +96,11 @@ app.post('/api/persons', morgan(':method :url :status  :res[content-length] - :r
         number: body.number,
         date: new Date(),
     })
-    person.save().then(savePerson => {
+    person.save()
+    .then(savePerson => {
         response.json(savePerson)
     })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
@@ -112,6 +114,8 @@ const errorHandler = (error, request, response, next) => {
 
     if(error.name === 'CastError'){
         return response.status(400).send({error: 'malformed id'})
+    }else if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
     }
     next(error)
 }

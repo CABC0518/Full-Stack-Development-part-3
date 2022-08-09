@@ -18,7 +18,16 @@ const personSchema = new mongoose.Schema({
     minlength: 3,
     required: true,
   },
-  number: String,
+  number: {
+    minLength: 8,
+    validate: {
+      validator: function(num) {
+        const pattern = /^(\d{2,3})-\d*/
+        const re = new RegExp(pattern)
+        const result = re.match(num)
+        return result
+      },
+  },
   date: {
     type: Date,
     required: true
